@@ -300,6 +300,7 @@ class PolicyGradientN:
 		observation = env.reset()[0:14]
 		frame_counter = 0
 		done = False
+		speed_sum = 0
 		while not done:
 		    frame_counter += 1
 		    if render: env.render()
@@ -311,10 +312,11 @@ class PolicyGradientN:
 		    action = sum_actions(a1, a2, a3, a4)
 		    observation, reward, done, info = env.step(action)
 		    observation = observation[0:14]
+		    speed_sum += observation[2]
 		    self.store_transition(observation, one_hot_1, one_hot_2, one_hot_3, one_hot_4, reward)
-		    if frame_counter > max_frames: done = True
+		    if frame_counter >= max_frames: done = True
 		    if done:
 		        rewards_sum = sum(self.episode_rewards)
 		        self.reset_episode_data()
 		        print("Simulation reward: ", rewards_sum)
-		        return(rewards_sum)
+		        return(rewards_sum, speed_sum)

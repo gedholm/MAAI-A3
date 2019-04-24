@@ -23,10 +23,10 @@ n_y = 3
 RENDER_ENV = False
 LR = 0.01
 GAMMA = 0.98
-EPISODES = 9000
+EPISODES = 5000
 rewards = []
-RENDER_REWARD_MIN = 30
-N_HEURISTIC = 10
+RENDER_REWARD_MIN = 20
+N_HEURISTIC = 25
 N_avg = 100
 RENDER_INTERVAL = 100
 CONVERGENCE_LIMIT = 0
@@ -80,7 +80,7 @@ if __name__ == "__main__":
             observation_, reward, done, info = env.step(action)
             observation_ = observation_[0:14]
             frame_counter += 1
-            if frame_counter > max_frames:
+            if frame_counter >= max_frames:
                 done = True
             # 3. Store transition for training
             PG.store_transition(observation, one_hot_1, one_hot_2, one_hot_3, one_hot_4, reward)
@@ -91,7 +91,8 @@ if __name__ == "__main__":
                 if RENDER_ENV: print("Reward in render:", episode_rewards_sum, " Frames: ", frame_counter)
                 if episode_rewards_sum > RENDER_REWARD_MIN:
                     print("good one")
-                    PG.run_simulation(3000, env, True)
+                    run_trials(PG, env)
+                    #PG.run_simulation(1600, env, True)
                     RENDER_REWARD_MIN = episode_rewards_sum
                     best_PGs.append(PG)
                     # PGiteration += 1
@@ -127,7 +128,7 @@ if __name__ == "__main__":
                 # 4. Train neural network
                 discounted_episode_rewards_norm = PG.learn()
                 # Render env if we get to rewards minimum
-                if episode_rewards_sum > RENDER_REWARD_MIN: RENDER_ENV = True
+                # if episode_rewards_sum > RENDER_REWARD_MIN: RENDER_ENV = True
                 prev_avg = avg_last_n
                 if convergence_counter>CONVERGENCE_COUNTER_LIMIT and avg_last_n < CONVERGENCE_LIMIT:
                     convergence_counter = 0

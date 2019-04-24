@@ -40,7 +40,7 @@ def sum_actions(v1, v2, v3, v4):
 
 def make_action_from_one(v, joint):
 	action = [0]*4
-	intensity = 0.9
+	intensity = 1
 	a = v.index(1)
 	if a == 0:
 		action[joint] = intensity
@@ -74,18 +74,23 @@ def make_one_hot_int(a):
 
 def run_trials(PG, env):
 	final_returns = []
-	render = False
+	final_distances = []
+	render = True
 	print("Final trials")
-	for i in range(0, 100):
-		if i == 0:
-			reder = True
-		else:
-			render = False
-		final_returns.append(PG.run_simulation(3000, env, render))
+	for i in range(0, 10):
+		# if i == 0:
+		# 	reder = True
+		# else:
+		# 	render = False
+		reward, dist = PG.run_simulation(1600, env, render)
+		final_returns.append(reward)
+		final_distances.append(dist)
 	best_final_return = max(final_returns)
 	avg_final_return = sum(final_returns)/len(final_returns)
+	best_final_distance = max(final_distances)
 	print("Best final return: ", best_final_return)
 	print("Average final return: ", avg_final_return)
+	print("Best final distance: ", best_final_distance)
 	return(final_returns)
 
 
@@ -165,8 +170,8 @@ def heuristic_walk(s, env, PG, episode):
 		a[2] = hip_todo[1]
 		a[3] = knee_todo[1]
 		a = np.clip(0.5*a, -1.0, 1.0)
-		if episode == 0: 
-			env.render()
+		# if episode == 0: 
+		# 	env.render()
 			#print(sum(PG.episode_rewards))
 		if done or steps > max_frames: 
 			PG.learn()
